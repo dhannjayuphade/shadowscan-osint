@@ -1,32 +1,29 @@
-# shadowscan-osint
-A privacy-focused OSINT username scanner for discovering publicly available profile footprints.
+# 🔎 ShadowScan OSINT
 
-🔎 ShadowScan OSINT
+> Explore the public footprint of a username.
 
-«Explore the public footprint of a username.»
+ShadowScan is a lightweight, privacy-focused OSINT tool that checks publicly accessible profile URLs for a given username.
 
-ShadowScan is a lightweight, privacy-focused OSINT tool that checks whether a username has a publicly accessible profile URL on selected online platforms.
-
-It is designed for cybersecurity learning, OSINT education, and authorized security research.
+Designed for cybersecurity learning, OSINT education, and authorized security research.
 
 ---
 
-✨ Features
+## ✨ Features
 
-- 🔍 Username footprint scanning
+- 🔍 Username OSINT scanning
 - 🌐 Multi-platform public profile checking
-- ⚡ Concurrent scanning for faster results
-- 📊 Clear FOUND / NOT FOUND / UNKNOWN results
-- 📝 Automatic text report generation
-- 📱 Works in Termux
-- 💻 Works on Linux, Windows and macOS with Python
-- 📦 No third-party Python packages required
+- ⚡ Fast concurrent scanning
+- 📊 FOUND / NOT FOUND / UNKNOWN results
+- 📝 Automatic scan report
+- 📱 Termux support
+- 💻 Linux / Windows / macOS support
+- 📦 No third-party Python dependencies
 
 ---
 
-🌐 Platforms
+## 🌐 Platforms Checked
 
-ShadowScan currently checks public URLs on:
+ShadowScan currently checks public profile URLs on:
 
 - GitHub
 - GitLab
@@ -39,135 +36,109 @@ ShadowScan currently checks public URLs on:
 - Gravatar
 - PyPI
 
-The platform list can be expanded in future versions.
+More platforms may be added in future versions.
 
 ---
 
-🔎 ShadowScan OSINT
+# 📱 Installation — Termux
 
-«Explore the public footprint of a username.»
+## 1. Update Termux
 
-A lightweight, privacy-focused OSINT username scanner for checking publicly accessible profile URLs.
-
-📱 Installation — Termux
-
-1. Update Termux
-
+```bash
 pkg update && pkg upgrade -y
+```
 
-2. Install Git and Python
+## 2. Install Git and Python
 
+```bash
 pkg install git python -y
+```
 
-3. Clone ShadowScan
+## 3. Clone ShadowScan
 
+```bash
 git clone https://github.com/dhannjayuphade/shadowscan-osint.git
+```
 
-4. Open the project
+## 4. Enter the project directory
 
+```bash
 cd shadowscan-osint
+```
 
-5. Check the files
+## 5. Check project files
 
+```bash
 ls
+```
 
-You should see:
+Expected files:
 
-LICENSE
-README.md
-requirements.txt
+```text
 osint.py
+README.md
+LICENSE
+requirements.txt
 .gitignore
+```
 
-6. Install dependencies
+## 6. Install requirements
 
-ShadowScan uses only Python's standard library, so no external packages are required.
-
+```bash
 pip install -r requirements.txt
+```
 
-7. Start ShadowScan
+> ShadowScan currently uses only Python's standard library, so no external packages are required.
 
+## 7. Run ShadowScan
+
+```bash
 python osint.py
+```
 
-⚡ Quick Installation
+---
 
-You can also use:
+# ⚡ Quick Installation
 
+Copy and run:
+
+```bash
 pkg update -y && pkg install git python -y && git clone https://github.com/dhannjayuphade/shadowscan-osint.git && cd shadowscan-osint && python osint.py
+```
 
-🚀 Usage
+---
 
-Interactive mode:
-
-python osint.py
-
-Then enter:
-
-Enter username: example123
-
-Or directly:
-
-python osint.py example123
-
-⚠️ Disclaimer
-
-ShadowScan checks only publicly accessible profile URLs.
-
-It does not bypass authentication, access private profiles, collect passwords, or retrieve hidden personal information.
-
-Use this project only for lawful educational and authorized security research.
-
-📄 License
-
-MIT License.
-
-📱 Termux Installation
-
-Install Python:
-
-pkg update
-pkg install python
-
-Clone the repository:
-
-git clone https://github.com/dhannjayuphade/shadowscan-osint.git
-
-Enter the project:
-
-cd shadowscan-osint
+# 🚀 Usage
 
 Run ShadowScan:
 
+```bash
 python osint.py
+```
 
----
+Enter a username when asked:
 
-🚀 Usage
-
-Run interactively:
-
-python osint.py
-
-Then enter a username:
-
+```text
 Enter username: example123
+```
 
 You can also provide the username directly:
 
+```bash
 python osint.py example123
+```
 
-You can enter either:
+Using `@username` also works:
 
-example123
-
-or:
-
-@example123
+```bash
+python osint.py @example123
+```
 
 ---
 
-📊 Example
+# 📊 Example
 
+```text
 ╔══════════════════════════════════════════════╗
 ║              SHADOWSCAN OSINT               ║
 ║      PUBLIC USERNAME FOOTPRINT SCANNER       ║
@@ -181,6 +152,7 @@ or:
 [-] GitLab       NOT FOUND
 [?] Reddit       UNKNOWN
 [+] Dev.to       FOUND
+[-] Medium       NOT FOUND
 
 ===========================================================
 
@@ -191,14 +163,19 @@ Found       : 2
 Not Found   : 6
 Unknown     : 2
 Errors      : 0
+```
 
 ---
 
-📝 Reports
+# 📝 Scan Reports
 
-After a scan, ShadowScan automatically creates a text report:
+After a scan, ShadowScan creates a local text report.
 
+Example:
+
+```text
 shadowscan_example123.txt
+```
 
 The report contains:
 
@@ -208,49 +185,58 @@ The report contains:
 - HTTP response status
 - Scan result
 
+Generated reports are ignored by Git using `.gitignore`.
+
 ---
 
-🔐 Privacy & Security
+# 🔐 Privacy & Security
 
-ShadowScan does not:
+ShadowScan does **NOT**:
 
-- ❌ Request passwords
-- ❌ Bypass login systems
 - ❌ Access private profiles
+- ❌ Bypass login systems
+- ❌ Collect passwords
 - ❌ Extract private messages
 - ❌ Find hidden phone numbers
-- ❌ Find passwords
-- ❌ Track a person's live location
+- ❌ Track live location
 - ❌ Bypass platform security
 - ❌ Access private account information
 
-It only checks publicly accessible profile URLs.
+ShadowScan only checks publicly accessible profile URLs.
 
 ---
 
-⚠️ Important Disclaimer
+# ⚠️ Disclaimer
 
-ShadowScan is provided for educational and authorized OSINT/security research purposes.
+ShadowScan is intended for:
 
-A "FOUND" result only means that the requested public URL returned a response. It does not prove that the profile belongs to a particular person.
+- Cybersecurity education
+- OSINT learning
+- Authorized security research
+- Public-profile discovery
 
-Always verify information independently and respect applicable laws, platform terms, privacy rights, and authorization requirements.
+A `FOUND` result does **not** prove that a profile belongs to a particular person.
+
+Always respect privacy, applicable laws, platform terms, and authorization requirements.
 
 The developer is not responsible for misuse of this software.
 
 ---
 
-🛠️ Requirements
+# 🛠️ Requirements
 
-- Python 3.9 or newer
+- Python 3.9+
+- Git
 - Internet connection
+- Termux / Linux / Windows / macOS
 
-No external Python libraries are required.
+No third-party Python packages are currently required.
 
 ---
 
-📂 Project Structure
+# 📂 Project Structure
 
+```text
 shadowscan-osint/
 │
 ├── osint.py
@@ -258,33 +244,45 @@ shadowscan-osint/
 ├── LICENSE
 ├── requirements.txt
 └── .gitignore
+```
 
 ---
 
-📜 License
+# 👨‍💻 Developer
 
-ShadowScan is released under the MIT License.
+## Dhannjay Uphade
 
-See ""LICENSE"" (LICENSE) for details.
+🌐 Website:
 
----
-
-👨‍💻 Developer
-
-Dhannjay Uphade
-
-GitHub:
-
-https://github.com/dhannjayuphade
-
-Instagram 
-https://www.instagram.com/dhannjayuphade?igsh=YzljYTk1ODg3Zg==
-
-Website 
 https://dhannjayuphade.github.io/
 
+📧 Email:
+
+dhannjayuphade5@gmail.com
+
+📸 Instagram:
+
+https://www.instagram.com/dhannjayuphade/
+
 ---
 
-⭐ Support
+# ⭐ Support
 
-If you find ShadowScan useful for learning cybersecurity and OSINT, consider giving the repository a ⭐ on GitHub.
+If you find ShadowScan useful for learning cybersecurity and OSINT:
+
+⭐ Star the repository  
+🍴 Fork the repository  
+🐛 Report bugs  
+💡 Suggest new features
+
+---
+
+# 📜 License
+
+This project is licensed under the MIT License.
+
+See the `LICENSE` file for details.
+
+---
+
+**ShadowScan — Public Footprint. Privacy First.**
