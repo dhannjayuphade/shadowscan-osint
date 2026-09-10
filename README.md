@@ -43,6 +43,84 @@ The platform list can be expanded in future versions.
 
 ---
 
+🔎 ShadowScan OSINT
+
+«Explore the public footprint of a username.»
+
+A lightweight, privacy-focused OSINT username scanner for checking publicly accessible profile URLs.
+
+📱 Installation — Termux
+
+1. Update Termux
+
+pkg update && pkg upgrade -y
+
+2. Install Git and Python
+
+pkg install git python -y
+
+3. Clone ShadowScan
+
+git clone https://github.com/dhannjayuphade/shadowscan-osint.git
+
+4. Open the project
+
+cd shadowscan-osint
+
+5. Check the files
+
+ls
+
+You should see:
+
+LICENSE
+README.md
+requirements.txt
+osint.py
+.gitignore
+
+6. Install dependencies
+
+ShadowScan uses only Python's standard library, so no external packages are required.
+
+pip install -r requirements.txt
+
+7. Start ShadowScan
+
+python osint.py
+
+⚡ Quick Installation
+
+You can also use:
+
+pkg update -y && pkg install git python -y && git clone https://github.com/dhannjayuphade/shadowscan-osint.git && cd shadowscan-osint && python osint.py
+
+🚀 Usage
+
+Interactive mode:
+
+python osint.py
+
+Then enter:
+
+Enter username: example123
+
+Or directly:
+
+python osint.py example123
+
+⚠️ Disclaimer
+
+ShadowScan checks only publicly accessible profile URLs.
+
+It does not bypass authentication, access private profiles, collect passwords, or retrieve hidden personal information.
+
+Use this project only for lawful educational and authorized security research.
+
+📄 License
+
+MIT License.
+
 📱 Termux Installation
 
 Install Python:
