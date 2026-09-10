@@ -1,55 +1,84 @@
 #!/usr/bin/env python3
 
+import os
 import re
 import sys
+import time
 import urllib.request
 import urllib.error
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+
 # ============================================================
-# ShadowScan OSINT
+# SHADOWSCAN OSINT
 # Public Username Footprint Scanner
-# Version: 1.0
+# Version 3.0
+# Developer: Dhannjay Uphade
 # ============================================================
 
-VERSION = "1.0"
+VERSION = "3.0"
 
-SITES = {
+DEVELOPER = "Dhannjay Uphade"
+WEBSITE = "https://dhannjayuphade.github.io/"
+GITHUB = "https://github.com/dhannjayuphade/shadowscan-osint"
+EMAIL = "dhannjayuphade5@gmail.com"
+
+
+# ============================================================
+# PUBLIC PLATFORMS
+# ============================================================
+
+PLATFORMS = {
+    "Instagram": "https://www.instagram.com/{u}/",
+    "Facebook": "https://www.facebook.com/{u}",
+    "YouTube": "https://www.youtube.com/@{u}",
+    "X / Twitter": "https://x.com/{u}",
+    "TikTok": "https://www.tiktok.com/@{u}",
+    "Reddit": "https://www.reddit.com/user/{u}/",
     "GitHub": "https://github.com/{u}",
     "GitLab": "https://gitlab.com/{u}",
-    "Reddit": "https://www.reddit.com/user/{u}/",
-    "Codeberg": "https://codeberg.org/{u}",
-    "Dev.to": "https://dev.to/{u}",
-    "Medium": "https://medium.com/@{u}",
-    "Twitch": "https://www.twitch.tv/{u}",
+    "LinkedIn": "https://www.linkedin.com/in/{u}/",
     "Pinterest": "https://www.pinterest.com/{u}/",
-    "Gravatar": "https://gravatar.com/{u}",
+    "Twitch": "https://www.twitch.tv/{u}",
+    "Medium": "https://medium.com/@{u}",
+    "Dev.to": "https://dev.to/{u}",
+    "Telegram": "https://t.me/{u}",
+    "Snapchat": "https://www.snapchat.com/add/{u}",
+    "ShareChat": "https://sharechat.com/profile/{u}",
+    "Codeberg": "https://codeberg.org/{u}",
     "PyPI": "https://pypi.org/user/{u}/",
+    "Gravatar": "https://gravatar.com/{u}",
 }
+
 
 TIMEOUT = 8
 
 HEADERS = {
     "User-Agent": (
-        "Mozilla/5.0 (Linux; Android) "
+        "Mozilla/5.0 (Linux; Android 13) "
         "AppleWebKit/537.36 "
         "Chrome/120.0 Mobile Safari/537.36 "
-        "ShadowScan/1.0"
+        "ShadowScan/3.0"
     )
 }
 
 
-# ------------------------------------------------------------
-# Colors
-# ------------------------------------------------------------
+# ============================================================
+# TERMINAL COLORS
+# ============================================================
 
 RESET = "\033[0m"
-GREEN = "\033[92m"
+
+BLACK = "\033[30m"
 RED = "\033[91m"
-CYAN = "\033[96m"
+GREEN = "\033[92m"
 YELLOW = "\033[93m"
+BLUE = "\033[94m"
+MAGENTA = "\033[95m"
+CYAN = "\033[96m"
 WHITE = "\033[97m"
 GRAY = "\033[90m"
+
 BOLD = "\033[1m"
 
 
@@ -57,58 +86,211 @@ def color(text, colour):
     return f"{colour}{text}{RESET}"
 
 
-# ------------------------------------------------------------
-# Banner
-# ------------------------------------------------------------
+# ============================================================
+# TERMINAL CONTROL
+# ============================================================
+
+def clear_screen():
+
+    os.system(
+        "clear"
+        if os.name != "nt"
+        else "cls"
+    )
+
+
+def hide_cursor():
+
+    print("\033[?25l", end="")
+
+
+def show_cursor():
+
+    print("\033[?25h", end="")
+
+
+# ============================================================
+# TYPING EFFECT
+# ============================================================
+
+def type_text(text, delay=0.01, colour=WHITE):
+
+    print(colour, end="")
+
+    for char in text:
+
+        print(char, end="", flush=True)
+        time.sleep(delay)
+
+    print(RESET, end="")
+
+
+# ============================================================
+# STARTUP ANIMATION
+# ============================================================
+
+def startup():
+
+    clear_screen()
+    hide_cursor()
+
+    try:
+
+        print()
+
+        type_text(
+            " [ SYSTEM INITIALIZING... ]",
+            0.025,
+            CYAN
+        )
+
+        time.sleep(0.25)
+
+        type_text(
+            " [ LOADING OSINT ENGINE... ]",
+            0.025,
+            YELLOW
+        )
+
+        time.sleep(0.25)
+
+        type_text(
+            " [ CONNECTING PUBLIC DATA MODULES... ]",
+            0.02,
+            MAGENTA
+        )
+
+        time.sleep(0.25)
+
+        type_text(
+            " [ SYSTEM READY ]",
+            0.025,
+            GREEN
+        )
+
+        time.sleep(0.4)
+
+        clear_screen()
+
+    finally:
+
+        show_cursor()
+
+
+# ============================================================
+# BANNER
+# ============================================================
 
 def banner():
 
-    print()
-
-    print(color(
-        r"""
+    logo = r"""
  ███████╗██╗  ██╗ █████╗ ██████╗  ██████╗ ██╗    ██╗
  ██╔════╝██║  ██║██╔══██╗██╔══██╗██╔═══██╗██║    ██║
  ███████╗███████║███████║██║  ██║██║   ██║██║ █╗ ██║
  ╚════██║██╔══██║██╔══██║██║  ██║██║   ██║██║███╗██║
  ███████║██║  ██║██║  ██║██████╔╝╚██████╔╝╚███╔███╔╝
  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚══╝╚══╝
+"""
 
-              SHADOWSCAN OSINT
-        PUBLIC USERNAME FOOTPRINT SCANNER
-        """,
-        CYAN
-    ))
+    print(color(logo, CYAN))
 
-    print(color(f"Version {VERSION}", GRAY))
+    print(
+        color(
+            "             [ S H A D O W S C A N ]",
+            BOLD + MAGENTA
+        )
+    )
+
+    print(
+        color(
+            "          PUBLIC USERNAME OSINT TOOL",
+            YELLOW
+        )
+    )
+
+    print()
+    print(color("═" * 68, CYAN))
+
+    print(
+        color("  Developer : ", GRAY) +
+        color(DEVELOPER, WHITE)
+    )
+
+    print(
+        color("  Website   : ", GRAY) +
+        color(WEBSITE, BLUE)
+    )
+
+    print(
+        color("  GitHub    : ", GRAY) +
+        color(GITHUB, BLUE)
+    )
+
+    print(
+        color("  Email     : ", GRAY) +
+        color(EMAIL, WHITE)
+    )
+
+    print(
+        color("  Version   : ", GRAY) +
+        color(VERSION, GREEN)
+    )
+
+    print(color("═" * 68, CYAN))
+
+    print()
+
+    print(
+        color(
+            " [✓] PUBLIC OSINT ENGINE ONLINE",
+            GREEN
+        )
+    )
+
+    print(
+        color(
+            " [✓] PROFILE URL CHECKER READY",
+            GREEN
+        )
+    )
+
+    print(
+        color(
+            " [✓] PRIVACY MODE ENABLED",
+            GREEN
+        )
+    )
+
     print()
 
 
-# ------------------------------------------------------------
-# Username validation
-# ------------------------------------------------------------
+# ============================================================
+# USERNAME VALIDATION
+# ============================================================
 
-def validate_username(username):
+def valid_username(username):
 
-    if not username:
-        return False
-
-    # Common username characters.
-    # Maximum length is kept conservative.
     pattern = r"^[A-Za-z0-9._-]{1,39}$"
 
-    return bool(re.fullmatch(pattern, username))
+    return bool(
+        re.fullmatch(
+            pattern,
+            username
+        )
+    )
 
 
-# ------------------------------------------------------------
-# HTTP checker
-# ------------------------------------------------------------
+# ============================================================
+# PLATFORM CHECK
+# ============================================================
 
-def check_site(site):
+def check_platform(item):
 
-    name, template = site
+    name, template = item
 
-    url = template.format(u=USERNAME)
+    url = template.format(
+        u=USERNAME
+    )
 
     request = urllib.request.Request(
         url,
@@ -123,39 +305,28 @@ def check_site(site):
             timeout=TIMEOUT
         ) as response:
 
-            status = response.status
+            code = response.status
 
-            # Any successful HTTP response is only a lead.
-            if 200 <= status < 400:
+            if 200 <= code < 400:
 
                 return {
                     "name": name,
                     "url": url,
                     "status": "FOUND",
-                    "http": status
+                    "code": code
                 }
 
             return {
                 "name": name,
                 "url": url,
                 "status": "UNKNOWN",
-                "http": status
+                "code": code
             }
+
 
     except urllib.error.HTTPError as error:
 
         code = error.code
-
-        # These responses can occur for protected,
-        # rate-limited or otherwise special pages.
-        if code in (401, 403, 429):
-
-            return {
-                "name": name,
-                "url": url,
-                "status": "UNKNOWN",
-                "http": code
-            }
 
         if code == 404:
 
@@ -163,45 +334,88 @@ def check_site(site):
                 "name": name,
                 "url": url,
                 "status": "NOT FOUND",
-                "http": code
+                "code": code
+            }
+
+        if code in (401, 403, 429):
+
+            return {
+                "name": name,
+                "url": url,
+                "status": "UNKNOWN",
+                "code": code
             }
 
         return {
             "name": name,
             "url": url,
             "status": "UNKNOWN",
-            "http": code
+            "code": code
         }
 
-    except urllib.error.URLError as error:
+
+    except urllib.error.URLError:
 
         return {
             "name": name,
             "url": url,
             "status": "ERROR",
-            "http": str(error.reason)
+            "code": "NETWORK"
         }
 
-    except Exception as error:
+
+    except Exception:
 
         return {
             "name": name,
             "url": url,
             "status": "ERROR",
-            "http": type(error).__name__
+            "code": "ERROR"
         }
 
 
-# ------------------------------------------------------------
-# Display result
-# ------------------------------------------------------------
+# ============================================================
+# ANIMATED SCAN BAR
+# ============================================================
+
+def scan_animation(total):
+
+    width = 32
+
+    for i in range(width + 1):
+
+        percent = int(
+            (i / width) * 100
+        )
+
+        filled = "█" * i
+        empty = "░" * (width - i)
+
+        print(
+            f"\r {color('[SCAN]', CYAN)} "
+            f"[{color(filled, GREEN)}"
+            f"{color(empty, GRAY)}] "
+            f"{percent:3d}%",
+            end="",
+            flush=True
+        )
+
+        time.sleep(0.015)
+
+    print()
+    print()
+
+
+# ============================================================
+# RESULT DISPLAY
+# ============================================================
 
 def display_result(result):
 
     name = result["name"]
     url = result["url"]
     status = result["status"]
-    http = result["http"]
+    code = result["code"]
 
     if status == "FOUND":
 
@@ -225,23 +439,29 @@ def display_result(result):
 
     print(
         f"{icon} "
-        f"{name:<12} "
-        f"{state:<20} "
-        f"{url}"
+        f"{name:<15} "
+        f"{state:<18} "
+        f"HTTP {code}"
     )
 
-    print(
-        f"    {color('HTTP:', GRAY)} {http}"
-    )
+    if status == "FOUND":
+
+        print(
+            f"    {color('↳', GRAY)} "
+            f"{color(url, BLUE)}"
+        )
 
 
-# ------------------------------------------------------------
-# Save report
-# ------------------------------------------------------------
+# ============================================================
+# REPORT
+# ============================================================
 
 def save_report(results):
 
-    filename = f"shadowscan_{USERNAME}.txt"
+    filename = (
+        f"shadowscan_"
+        f"{USERNAME}.txt"
+    )
 
     try:
 
@@ -251,207 +471,267 @@ def save_report(results):
             encoding="utf-8"
         ) as file:
 
-            file.write("SHADOWSCAN OSINT REPORT\n")
-            file.write("=" * 60 + "\n\n")
-
             file.write(
-                f"Username: {USERNAME}\n"
+                "SHADOWSCAN OSINT REPORT\n"
             )
 
             file.write(
-                f"Version: {VERSION}\n\n"
+                "=" * 68 + "\n\n"
+            )
+
+            file.write(
+                f"Developer : {DEVELOPER}\n"
+            )
+
+            file.write(
+                f"Website   : {WEBSITE}\n"
+            )
+
+            file.write(
+                f"Username  : {USERNAME}\n"
+            )
+
+            file.write(
+                f"Version   : {VERSION}\n\n"
             )
 
             for result in results:
 
                 file.write(
-                    f"{result['name']}: "
+                    f"{result['name']} | "
                     f"{result['status']} | "
-                    f"{result['url']} | "
-                    f"HTTP {result['http']}\n"
+                    f"HTTP {result['code']} | "
+                    f"{result['url']}\n"
                 )
 
             file.write("\n")
             file.write(
-                "NOTE: Results indicate public URL responses only.\n"
+                "Public URL checks only.\n"
             )
+
             file.write(
-                "They do not prove that a profile belongs to a "
-                "particular person.\n"
+                "A FOUND result does not prove account ownership.\n"
             )
 
         return filename
 
-    except Exception as error:
-
-        print(
-            color(
-                f"[!] Could not save report: {error}",
-                RED
-            )
-        )
+    except Exception:
 
         return None
 
 
-# ------------------------------------------------------------
-# Scanner
-# ------------------------------------------------------------
+# ============================================================
+# SCANNER
+# ============================================================
 
-def scan_username(username):
+def scan(username):
 
     global USERNAME
 
     USERNAME = username
 
+    clear_screen()
+    banner()
+
     print(
         color(
-            f"[*] Target username: {USERNAME}",
-            WHITE
+            " TARGET INFORMATION",
+            BOLD + CYAN
+        )
+    )
+
+    print(
+        color(" ├─ Username : ", GRAY) +
+        color(USERNAME, WHITE)
+    )
+
+    print(
+        color(" ├─ Platforms: ", GRAY) +
+        color(str(len(PLATFORMS)), WHITE)
+    )
+
+    print(
+        color(" └─ Mode     : ", GRAY) +
+        color("PUBLIC OSINT", GREEN)
+    )
+
+    print()
+    print(
+        color(
+            "Starting public profile scan...",
+            YELLOW
+        )
+    )
+
+    print()
+
+    # Progress animation
+    scan_animation(
+        len(PLATFORMS)
+    )
+
+    results = []
+
+    with ThreadPoolExecutor(
+        max_workers=8
+    ) as executor:
+
+        futures = [
+            executor.submit(
+                check_platform,
+                item
+            )
+            for item in PLATFORMS.items()
+        ]
+
+        for future in as_completed(
+            futures
+        ):
+
+            try:
+
+                results.append(
+                    future.result()
+                )
+
+            except Exception:
+
+                pass
+
+
+    # Preserve platform order
+
+    order = {
+        name: index
+        for index, name
+        in enumerate(
+            PLATFORMS.keys()
+        )
+    }
+
+    results.sort(
+        key=lambda x:
+        order.get(
+            x["name"],
+            999
+        )
+    )
+
+
+    print(
+        color(
+            " PLATFORM RESULTS",
+            BOLD + CYAN
         )
     )
 
     print(
         color(
-            "[*] Checking public profile URLs...",
+            "─" * 72,
+            GRAY
+        )
+    )
+
+    print()
+
+    for result in results:
+
+        display_result(
+            result
+        )
+
+        print()
+
+
+    # ========================================================
+    # SUMMARY
+    # ========================================================
+
+    found = sum(
+        x["status"] == "FOUND"
+        for x in results
+    )
+
+    not_found = sum(
+        x["status"] == "NOT FOUND"
+        for x in results
+    )
+
+    unknown = sum(
+        x["status"] == "UNKNOWN"
+        for x in results
+    )
+
+    errors = sum(
+        x["status"] == "ERROR"
+        for x in results
+    )
+
+
+    print(
+        color(
+            "═" * 72,
             CYAN
         )
     )
 
     print(
         color(
-            "[*] No login or private-data access is performed.",
-            GRAY
+            "                    SCAN COMPLETE",
+            BOLD + GREEN
         )
     )
-
-    print()
-    print(color("-" * 75, GRAY))
-    print()
-
-    results = []
-
-    # Parallel requests make the scanner considerably faster.
-    with ThreadPoolExecutor(max_workers=6) as executor:
-
-        futures = [
-            executor.submit(
-                check_site,
-                site
-            )
-            for site in SITES.items()
-        ]
-
-        for future in as_completed(futures):
-
-            try:
-
-                result = future.result()
-
-                results.append(result)
-
-            except Exception as error:
-
-                print(
-                    color(
-                        f"[!] Scanner error: {error}",
-                        RED
-                    )
-                )
-
-    # Keep output in the same order as SITES.
-    order = {
-        name: index
-        for index, name in enumerate(SITES.keys())
-    }
-
-    results.sort(
-        key=lambda item: order.get(
-            item["name"],
-            999
-        )
-    )
-
-    for result in results:
-
-        display_result(result)
-
-        print()
-
-    # Statistics
-    found = sum(
-        1 for result in results
-        if result["status"] == "FOUND"
-    )
-
-    not_found = sum(
-        1 for result in results
-        if result["status"] == "NOT FOUND"
-    )
-
-    unknown = sum(
-        1 for result in results
-        if result["status"] == "UNKNOWN"
-    )
-
-    errors = sum(
-        1 for result in results
-        if result["status"] == "ERROR"
-    )
-
-    print(color("=" * 75, GRAY))
 
     print(
         color(
-            "SCAN SUMMARY",
-            BOLD + CYAN
+            "═" * 72,
+            CYAN
         )
     )
 
     print()
 
     print(
-        f"Checked     : {len(results)}"
+        f" {color('Total Platforms', GRAY)} : "
+        f"{len(results)}"
     )
 
     print(
-        color(
-            f"Found       : {found}",
-            GREEN
-        )
+        f" {color('FOUND', GREEN)}          : "
+        f"{found}"
     )
 
     print(
-        color(
-            f"Not Found   : {not_found}",
-            RED
-        )
+        f" {color('NOT FOUND', RED)}      : "
+        f"{not_found}"
     )
 
     print(
-        color(
-            f"Unknown     : {unknown}",
-            YELLOW
-        )
+        f" {color('UNKNOWN', YELLOW)}        : "
+        f"{unknown}"
     )
 
     print(
-        color(
-            f"Errors      : {errors}",
-            RED
-        )
+        f" {color('ERROR', RED)}          : "
+        f"{errors}"
     )
 
     print()
 
-    # Save report
-    report = save_report(results)
+
+    # ========================================================
+    # REPORT
+    # ========================================================
+
+    report = save_report(
+        results
+    )
 
     if report:
 
         print(
             color(
-                f"[+] Report saved: {report}",
+                f"[+] Report saved → {report}",
                 GREEN
             )
         )
@@ -460,14 +740,44 @@ def scan_username(username):
 
     print(
         color(
-            "Important: A FOUND result does not prove ownership.",
+            "─" * 72,
+            GRAY
+        )
+    )
+
+    print(
+        color(
+            " DEVELOPED BY DHANNJAY UPHADE",
+            MAGENTA
+        )
+    )
+
+    print(
+        color(
+            f" {WEBSITE}",
+            BLUE
+        )
+    )
+
+    print(
+        color(
+            "─" * 72,
+            GRAY
+        )
+    )
+
+    print()
+
+    print(
+        color(
+            "[!] Public information only.",
             YELLOW
         )
     )
 
     print(
         color(
-            "Verify identity independently using lawful public sources.",
+            "[!] FOUND does not prove account ownership.",
             YELLOW
         )
     )
@@ -475,73 +785,88 @@ def scan_username(username):
     print()
 
 
-# ------------------------------------------------------------
-# Main
-# ------------------------------------------------------------
+# ============================================================
+# MAIN
+# ============================================================
 
 def main():
 
+    startup()
+
     banner()
-
-    if len(sys.argv) > 1:
-
-        username = sys.argv[1].strip()
-
-    else:
-
-        username = input(
-            color(
-                "Enter username: ",
-                WHITE
-            )
-        ).strip()
-
-    # Remove @ if user enters @username.
-    username = username.lstrip("@")
-
-    if not validate_username(username):
-
-        print()
-
-        print(
-            color(
-                "[!] Invalid username.",
-                RED
-            )
-        )
-
-        print(
-            color(
-                "Use letters, numbers, '.', '_' or '-'.",
-                GRAY
-            )
-        )
-
-        print()
-
-        sys.exit(1)
 
     try:
 
-        scan_username(username)
+        if len(sys.argv) > 1:
+
+            username = (
+                sys.argv[1]
+                .strip()
+                .lstrip("@")
+            )
+
+        else:
+
+            username = input(
+                color(
+                    " TARGET USERNAME ➜ ",
+                    BOLD + WHITE
+                )
+            ).strip().lstrip("@")
+
+
+        if not valid_username(
+            username
+        ):
+
+            print()
+
+            print(
+                color(
+                    "[!] Invalid username.",
+                    RED
+                )
+            )
+
+            print(
+                color(
+                    "Use letters, numbers, '.', '_' or '-'.",
+                    GRAY
+                )
+            )
+
+            print()
+
+            return
+
+
+        scan(
+            username
+        )
+
 
     except KeyboardInterrupt:
 
         print()
 
+        show_cursor()
+
         print(
             color(
-                "[!] Scan cancelled.",
+                "[!] Scan interrupted.",
                 YELLOW
             )
         )
 
         print()
 
-        sys.exit(0)
+
+    finally:
+
+        show_cursor()
 
 
-# ------------------------------------------------------------
+# ============================================================
 
 if __name__ == "__main__":
     main()
