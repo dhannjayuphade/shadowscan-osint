@@ -1,0 +1,3 @@
+# ShadowScan OSINT
+# No external dependencies required.
+# Uses Python standard library only.
